@@ -7,23 +7,35 @@ namespace CsvDataLayer.Data
 {
     public static class DatabaseInitializer
     {
-        public static async Task EnsureDatabaseCreated(string masterConnectionString, string databaseName)
+        public static async Task EnsureDatabaseCreated(string connectionString, string databaseName)
         {
+            // Create a connection string to master database
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            var originalDatabase = builder.InitialCatalog;
+            builder.InitialCatalog = "master";
+            var masterConnectionString = builder.ConnectionString;
+
             using var connection = new SqlConnection(masterConnectionString);
             try
             {
                 await connection.OpenAsync();
-                Console.WriteLine("Successfully connected to SQL Server.");
+                Console.WriteLine("Successfully connected to SQL Server master database.");
 
                 var createDbCommand = new SqlCommand(
                     string.Format(SqlConstants.CreateDatabaseIfNotExists, databaseName),
                     connection);
                 await createDbCommand.ExecuteNonQueryAsync();
-                Console.WriteLine($"Ensured {databaseName} database exists.");
+                Console.WriteLine($"Ensured database '{databaseName}' exists.");
+
+                // Switch to the newly created database
+                builder.InitialCatalog = databaseName;
+                using var dbConnection = new SqlConnection(builder.ConnectionString);
+                await dbConnection.OpenAsync();
+                Console.WriteLine($"Successfully connected to '{databaseName}' database.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error connecting to SQL Server: {ex.Message}");
+                Console.WriteLine($"Error ensuring database exists: {ex.Message}");
                 throw;
             }
         }
