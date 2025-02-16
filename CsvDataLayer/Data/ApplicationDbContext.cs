@@ -3,12 +3,8 @@ using CsvDataLayer.Entities;
 
 namespace CsvDataLayer.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<InvoiceHeader> InvoiceHeaders { get; set; } = null!;
         public DbSet<InvoiceLine> InvoiceLines { get; set; } = null!;
 
