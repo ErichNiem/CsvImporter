@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CsvImporter Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/CsvImporter/bin/Debug/net8.0/CsvImporter.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/CsvImporter",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}
