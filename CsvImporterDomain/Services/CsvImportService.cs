@@ -40,10 +40,17 @@ namespace CsvImporterDomain.Services
         {
             using var fileStream = new FileStream(csvFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             using var reader = new StreamReader(fileStream);
+            
+            if (reader.EndOfStream)
+            {
+                throw new ReaderException(new CsvContext(new CsvConfiguration(CultureInfo.InvariantCulture)), "CSV file is empty");
+            }
+
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
                 MissingFieldFound = null,
+                PrepareHeaderForMatch = args => args.Header.ToLower().Replace(" ", ""),
                 HeaderValidated = null,
                 Delimiter = ",",
                 TrimOptions = TrimOptions.Trim,
@@ -54,8 +61,39 @@ namespace CsvImporterDomain.Services
             
             try
             {
+                // Read header first to validate
+                csv.Read();
+                csv.ReadHeader();
+                var headerRow = csv.HeaderRecord;
+
+                var requiredHeaders = new[]
+                {
+                    "Invoice Number",
+                    "Invoice Date",
+                    "Address",
+                    "Line description",
+                    "Invoice Quantity",
+                    "Unit selling price ex VAT",
+                    "Invoice Total Ex VAT"
+                };
+
+                var missingHeaders = requiredHeaders
+                    .Where(header => !headerRow!.Select(h => h.ToLower().Replace(" ", ""))
+                        .Contains(header.ToLower().Replace(" ", "")))
+                    .ToList();
+
+                if (missingHeaders.Any())
+                {
+                    throw new CsvHelper.MissingFieldException(csv.Context, missingHeaders.First());
+                }
+
                 csv.Context.RegisterClassMap<InvoiceCsvModelMap>();
                 var records = csv.GetRecords<InvoiceCsvModel>().ToList();
+
+                if (!records.Any())
+                {
+                    throw new ReaderException(csv.Context, "No valid records found in CSV file");
+                }
 
                 // Group records by invoice number
                 var invoiceGroups = records.GroupBy(r => r.InvoiceNumber);
@@ -94,10 +132,15 @@ namespace CsvImporterDomain.Services
 
                 // Verify totals match
                 var allInvoices = await invoiceService.GetAllInvoicesWithLines();
+                if (allInvoices == null || !allInvoices.Any())
+                {
+                    Console.WriteLine("No invoices found for validation");
+                    return;
+                }
                 
                 decimal headerTotal = allInvoices.Sum(h => h.InvoiceTotalExVAT);
                 decimal lineItemsTotal = allInvoices
-                    .Where(h => h.InvoiceLines != null)
+                    .Where(h => h.InvoiceLines != null && h.InvoiceLines.Any())
                     .SelectMany(h => h.InvoiceLines!)
                     .Sum(l => l.InvoiceQuantity * l.UnitSellingPriceExVAT);
 
@@ -134,10 +177,9 @@ namespace CsvImporterDomain.Services
                 Console.WriteLine($"Details: {ex.Message}");
                 throw;
             }
-            catch (CsvHelper.HeaderValidationException ex)
+            catch (ReaderException ex)
             {
-                Console.WriteLine($"\nHeader validation error: {ex.Message}");
-                Console.WriteLine("Expected headers: Invoice Number, Invoice Date, Address, Invoice Total Ex VAT, Line description, Invoice Quantity, Unit selling price ex VAT");
+                Console.WriteLine($"\nError in CSV data: {ex.Message}");
                 throw;
             }
             catch (Exception ex)

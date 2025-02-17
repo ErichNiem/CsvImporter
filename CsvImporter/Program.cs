@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 
-class Program
+namespace CsvImporter;
+
+public class Program
 {
     static async Task Main(string[] args)
     {
@@ -121,7 +123,18 @@ class Program
             Environment.ExitCode = 1;
         }
 
-        Console.WriteLine("\nPress any key to exit...");
-        Console.ReadKey();
+        // Only try to read key if we have a console window
+        if (Environment.UserInteractive && !Console.IsInputRedirected)
+        {
+            Console.WriteLine("\nPress any key to exit...");
+            try
+            {
+                Console.ReadKey(intercept: true);
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore if we can't read the key
+            }
+        }
     }
 }

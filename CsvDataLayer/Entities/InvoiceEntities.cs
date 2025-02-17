@@ -20,7 +20,7 @@ namespace CsvDataLayer.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal InvoiceTotalExVAT { get; set; }
         
-        public virtual ICollection<InvoiceLine>? InvoiceLines { get; set; } = new List<InvoiceLine>();
+        public virtual ICollection<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
     }
 
     public class InvoiceLine
@@ -32,7 +32,7 @@ namespace CsvDataLayer.Entities
         
         [Required]
         [ForeignKey("InvoiceHeaderId")]
-        public virtual InvoiceHeader? InvoiceHeader { get; set; }
+        public virtual InvoiceHeader InvoiceHeader { get; set; } = null!;
         
         [Required]
         [StringLength(100)]

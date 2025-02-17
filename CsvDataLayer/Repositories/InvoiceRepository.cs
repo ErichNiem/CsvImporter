@@ -59,18 +59,28 @@ namespace CsvDataLayer.Repositories
 
             if (existingInvoice != null)
             {
-                throw new DbUpdateException("Duplicate invoice number found");
+                throw new InvalidOperationException($"Invoice number {header.InvoiceNumber} already exists");
             }
 
-            await _context.InvoiceHeaders.AddAsync(header);
-            await _context.SaveChangesAsync();
-
-            foreach (var line in lines)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                line.InvoiceHeaderId = header.Id;
+                await _context.InvoiceHeaders.AddAsync(header);
+                
+                foreach (var line in lines)
+                {
+                    line.InvoiceHeader = header; // Set the navigation property instead of just the ID
+                }
+                await _context.InvoiceLines.AddRangeAsync(lines);
+                
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-            await _context.InvoiceLines.AddRangeAsync(lines);
-            await _context.SaveChangesAsync();
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<List<InvoiceHeader>> GetAllInvoicesWithLines()

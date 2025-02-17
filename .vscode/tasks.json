@@ -7,11 +7,30 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/CsvImporter/CsvImporter.csproj",
+                "${workspaceFolder}/CsvImporter.Tests/CsvImporter.Tests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/CsvImporter.Tests/CsvImporter.Tests.csproj",
+                "--logger:trx"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }
