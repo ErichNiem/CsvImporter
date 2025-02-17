@@ -7,23 +7,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 
-namespace CsvImporter
+namespace CsvImporter;
+
+public class Program
 {
-    internal static class Program
+    static async Task Main(string[] args)
     {
-        static async Task Main()
+        try
         {
-            try
-            {
-                // Get connection string and database name from App.config
-                var connectionString = ConfigurationManager.ConnectionStrings["CsvImporter"]?.ConnectionString
-                    ?? throw new ConfigurationErrorsException("Connection string 'CsvImporter' not found in configuration");
-
-                var databaseName = ConfigurationManager.AppSettings["DatabaseName"]
-                    ?? throw new ConfigurationErrorsException("DatabaseName not found in configuration");
-
-                // Ensure database exists
-                await DatabaseInitializer.EnsureDatabaseCreated(connectionString, databaseName);
+            // Get connection string and database name from App.config
+            var connectionString = ConfigurationManager.ConnectionStrings["CsvImporter"]?.ConnectionString 
+                ?? throw new ConfigurationErrorsException("Connection string 'CsvImporter' not found in configuration");
+                
+            var databaseName = ConfigurationManager.AppSettings["DatabaseName"] 
+                ?? throw new ConfigurationErrorsException("DatabaseName not found in configuration");
+            
+            // Ensure database exists
+            await DatabaseInitializer.EnsureDatabaseCreated(connectionString, databaseName);
 
                 // Set up application services
                 var services = new ServiceCollection();
@@ -123,8 +123,18 @@ namespace CsvImporter
                 Environment.ExitCode = 1;
             }
 
+        // Only try to read key if we have a console window
+        if (Environment.UserInteractive && !Console.IsInputRedirected)
+        {
             Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
+            try
+            {
+                Console.ReadKey(intercept: true);
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore if we can't read the key
+            }
         }
     }
 }

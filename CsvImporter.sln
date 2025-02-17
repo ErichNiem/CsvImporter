@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvDataLayer", "CsvDataLaye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvImporterDomain", "CsvImporterDomain\CsvImporterDomain.csproj", "{AC941609-6FA4-44DC-A250-2E6F73D46F3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvImporter.Tests", "CsvImporter.Tests\CsvImporter.Tests.csproj", "{2EDF35A6-910A-4D96-BCBB-E0A9ACD28B4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{AC941609-6FA4-44DC-A250-2E6F73D46F3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC941609-6FA4-44DC-A250-2E6F73D46F3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC941609-6FA4-44DC-A250-2E6F73D46F3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EDF35A6-910A-4D96-BCBB-E0A9ACD28B4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EDF35A6-910A-4D96-BCBB-E0A9ACD28B4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EDF35A6-910A-4D96-BCBB-E0A9ACD28B4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EDF35A6-910A-4D96-BCBB-E0A9ACD28B4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

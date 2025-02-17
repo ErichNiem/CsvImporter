@@ -1,6 +1,7 @@
 {
-    "version": "0.2.0",
+    "version": "2.0.0",
     "configurations": [
+        
         {
             "name": "CsvImporter Debug",
             "type": "coreclr",
@@ -11,6 +12,18 @@
             "cwd": "${workspaceFolder}/CsvImporter",
             "console": "internalConsole",
             "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Test",
+            "type": "dotnet",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/CsvImporter.Tests/bin/Debug/net8.0/CsvImporter.Tests.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/CsvImporter.Tests",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }
