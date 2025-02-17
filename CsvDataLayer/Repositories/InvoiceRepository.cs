@@ -5,14 +5,9 @@ using CsvDataLayer.Interfaces;
 
 namespace CsvDataLayer.Repositories
 {
-    public class InvoiceRepository : IInvoiceRepository
+    public class InvoiceRepository(ApplicationDbContext context) : IInvoiceRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public InvoiceRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<IEnumerable<InvoiceHeader>> GetAllInvoicesAsync()
         {
